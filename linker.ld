@@ -1,0 +1,24 @@
+ENTRY(_start)
+
+SECTIONS {
+  . = 2M; /* See https://wiki.osdev.org/Bare_Bones#Linking_the_Kernel */
+
+  .text BLOCK(4K) : ALIGN(4K) {
+    *(.multiboot)
+    *(.text)
+  }
+
+  .rodata BLOCK(4K) : ALIGN(4K) {
+    *(.rodata)
+  }
+
+  .data BLOCK(4K) : ALIGN(4K) {
+    *(.data)
+  }
+
+  .bss BLOCK(4K) : ALIGN(4K) {
+    *(COMMON)
+    *(.bss)
+  }
+}
+
