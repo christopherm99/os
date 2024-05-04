@@ -75,6 +75,7 @@ _start:
         C++ features such as global constructors and exceptions will require
         runtime support to work as well.
         */
+        lgdt [gdt_desc]
 
         /*
         Enter the high-level kernel. The ABI requires the stack is 16-byte
@@ -108,4 +109,26 @@ Set the size of the _start symbol to the current location '.' minus its start.
 This is useful when debugging or when you implement call tracing.
 */
 .size _start, . - _start
+
+gdt:
+gdt_null:
+         .quad 0
+gdt_code:
+        .word 0xFFFF     # first 16 bits of limit
+        .word 0          # first 16 bits of base address
+        .byte 0          # next 8 bits of base address
+        .byte 0x9A       # access byte
+        .byte 0b11001111 # last 4 bits of limit and flags
+        .byte 0          # last 8 bits of base address
+gdt_data:
+        .word 0xFFFF
+        .word 0
+        .byte 0
+        .byte 0x92
+        .byte 0b11001111
+        .byte 0
+gdt_end:
+gdt_desc:
+        .word (gdt_end - gdt)
+        .long (gdt)
 
