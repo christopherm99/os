@@ -76,6 +76,14 @@ _start:
         runtime support to work as well.
         */
         lgdt [gdt_desc]
+        jmp $0x8,$.reload_CS
+.reload_CS:
+        mov $0x10, %ax
+        mov %ax, %ds
+        mov %ax, %es
+        mov %ax, %fs
+        mov %ax, %gs
+        mov %ax, %ss
 
         /*
         Enter the high-level kernel. The ABI requires the stack is 16-byte
@@ -110,9 +118,10 @@ This is useful when debugging or when you implement call tracing.
 */
 .size _start, . - _start
 
+.align 16
 gdt:
 gdt_null:
-         .quad 0
+        .quad 0
 gdt_code:
         .word 0xFFFF     # first 16 bits of limit
         .word 0          # first 16 bits of base address
