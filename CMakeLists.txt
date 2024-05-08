@@ -4,19 +4,19 @@ PROJECT(os)
 
 INCLUDE_DIRECTORIES(include)
 
+SET(CMAKE_ASM_NASM_OBJECT_FORMAT "elf32")
+ENABLE_LANGUAGE(ASM_NASM)
+
 SET(CMAKE_C_COMPILER "i686-elf-gcc")
-SET(CMAKE_ASM_COMPILER "i686-elf-as")
 
 SET(LINKER_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/linker.ld")
 SET(CMAKE_C_FLAGS "-ffreestanding -nostdlib -nostdinc -O2 -g")
 SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "") # removes -rdynamic
 
-ENABLE_LANGUAGE(ASM)
-
 FILE(GLOB_RECURSE kernel_C_SRC "kernel/*.c")
-FILE(GLOB_RECURSE kernel_ASM_SRC "arch/i386/*.S")
+FILE(GLOB_RECURSE kernel_ARCH_ASM_SRC "arch/i386/*.nasm")
 FILE(GLOB_RECURSE kernel_ARCH_C_SRC "arch/i386/*.c")
 
-ADD_EXECUTABLE(os.bin ${kernel_C_SRC} ${kernel_ASM_SRC} ${kernel_ARCH_CSRC})
+ADD_EXECUTABLE(os.bin ${kernel_C_SRC} ${kernel_ARCH_ASM_SRC} ${kernel_ARCH_CSRC})
 SET_TARGET_PROPERTIES(os.bin PROPERTIES LINK_FLAGS "-T ${LINKER_SCRIPT} -lgcc")
 

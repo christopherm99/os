@@ -41,27 +41,49 @@ void print(const char* str) {
   write(str, strlen(str));
 }
 
-void printnum(int data) {
-  char* digit = "0123456789ABCDEF";
-  for (int i = 0; i < 16; i += 4)
+// TODO: there has to be a better way to do this
+static char *digit = "0123456789ABCDEF";
+
+void printu32(u32 data) {
+  for (int i = 28; i >= 0; i -= 4)
     putchar(digit[data >> i & 0xF]);
 }
 
+void printu16(u16 data) {
+  for (int i = 12; i >= 0; i -= 4)
+    putchar(digit[data >> i & 0xF]);
+}
+
+void printu8(u8 data) {
+  // TODO: are these for loops being unrolled?
+  for (int i = 4; i >= 0; i -= 4)
+    putchar(digit[data >> i & 0xF]);
+}
 
 void printf(const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  for (u32 i = 0; fmt[i] != '\0'; i++) {
+  for (u32 i = 0; fmt[i] != '\0';) {
     if (fmt[i] == '%') {
-      switch (fmt[i+1]) {
+      switch (fmt[++i]) {
         case 'x':
-          printnum(va_arg(ap, int));
+          printu32(va_arg(ap, int));
           break;
+        case 'h':
+          if (fmt[i+1] == 'h' && fmt[++i + 1] == 'x') {
+            i++;
+            printu8(va_arg(ap, int));
+            break;
+          } else if (fmt[++i] == 'x') {
+            printu16(va_arg(ap, int));
+            break;
+          }
+          /* FALLTHROUGH */
         default:
           putchar('%'); putchar(fmt[i+1]);
           break;
       }
-      i += 2;
+      i++;
     } else putchar(fmt[i++]);
   }
   va_end(ap);

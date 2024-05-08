@@ -1,5 +1,5 @@
 #include <io.h>
 
 void kmain() {
-  print("Hello World\n");
+  asm volatile ("int $0x0");
 }
