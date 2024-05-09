@@ -1,24 +1,57 @@
+OUTPUT_FORMAT(elf64-x86-64)
+OUTPUT_ARCH(i386:x86-64)
+
 ENTRY(_start)
 
-SECTIONS {
-  . = 2M; /* See https://wiki.osdev.org/Bare_Bones#Linking_the_Kernel */
+PHDRS {
+  requests PT_LOAD    FLAGS(6); /* RW- */
+  text     PT_LOAD    FLAGS(5); /* R-E */
+  rodata   PT_LOAD    FLAGS(4); /* R-- */
+  data     PT_LOAD    FLAGS(6); /* RW- */
+  dynamic  PT_DYNAMIC FLAGS(6); /* DYNAMIC */
+}
 
-  .text BLOCK(4K) : ALIGN(4K) {
-    *(.multiboot)
-    *(.text)
-  }
+SECTIONS {
+  . = 0xffffffff80000000; /* Limine spec requires that we use the top 2GiB */
+
+  /* Limine requests */
+  .requests : {
+    KEEP(*(.requests_start_marker))
+    KEEP(*(.requests))
+    KEEP(*(.requests_end_marker))
+  } :requests
+
+  /* Place .text in next page */
+  . += CONSTANT(MAXPAGESIZE);
+
+  .text : {
+    *(.text .text.*)
+  } :text
 
   .rodata BLOCK(4K) : ALIGN(4K) {
-    *(.rodata)
-  }
+    *(.rodata .rodata.*)
+  } :rodata
 
-  .data BLOCK(4K) : ALIGN(4K) {
-    *(.data)
-  }
+  . += CONSTANT(MAXPAGESIZE);
 
-  .bss BLOCK(4K) : ALIGN(4K) {
+  .data : {
+    *(.data .data.*)
+  } :data
+
+  .dynamic : {
+    *(.dynamic)
+  } :data :dynamic
+
+  /* NOTE: .bss MUST be last in :data */
+  .bss : {
     *(COMMON)
-    *(.bss)
+    *(.bss .bss.*)
+  } :data
+
+  /* Discard .note.* and .eh_frame as they may cause issues on some hosts */
+  /DISCARD/ : {
+    *(.eh_frame)
+    *(.note .note.*)
   }
 }
 

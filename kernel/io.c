@@ -3,23 +3,6 @@
 #include <types.h>
 #include <string.h>
 
-bool init = false;
-u32 trow;
-u32 tcol;
-u8 tcolor;
-u16* tbuffer;
-
-void vga_init() {
-  trow = 0;
-  tcol = 0;
-  tcolor = 0xF; // white on black
-  tbuffer = (u16 *) 0xB8000;
-  for (u32 i = 0; i < 25; i++)
-    for (u32 j = 0; j < 80; j++)
-      tbuffer[i*80 + j] = (u16)' ' | tcolor << 8;
-  init = true;
-}
-
 #define COM1 0x3F8
 void serial_init() {
   outb(COM1 + 1, 0x00); // Disable interrupts
@@ -35,24 +18,11 @@ void serial_init() {
 int is_transmit_empty() {
   return inb(COM1 + 5) & 0x20;
 }
- 
+
 void putchar(char a) {
   while (is_transmit_empty() == 0);
     outb(COM1, a);
 }
-
-/*
-void putchar(char c) {
-  if (!init) vga_init();
-  if (c == '\n') { tcol = 0; trow++; }
-  else tbuffer[trow*80 + (tcol++)] = (u16)c | tcolor << 8;
-  if (tcol == 80) { tcol = 0; trow++; }
-  if (trow == 25) {
-    memmove(tbuffer, tbuffer + 80, 24 * 80 * 2);
-    for (u32 i = 0; i < 80; i++) tbuffer[24*80 + i] = (u16)' ' | tcolor << 8;
-    trow = 24;
-  }
-} */
 
 void write(const char* data, u32 size) {
   for (u32 i = 0; i < size; i++) putchar(data[i]);

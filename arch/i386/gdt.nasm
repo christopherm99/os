@@ -1,4 +1,3 @@
-[BITS 32]
 section .text
 global gdt_load:function (gdt_load.end - gdt_load)
 gdt_load:
