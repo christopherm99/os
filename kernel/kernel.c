@@ -1,6 +1,6 @@
 #include <io.h>
 
 void kmain() {
-  print("hello!\n");
-  // asm volatile ("int $0x0");
+  // print("hello!\n");
+  __asm volatile ("int $0xFF");
 }
