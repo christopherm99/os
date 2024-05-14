@@ -20,8 +20,8 @@ int is_transmit_empty() {
 }
 
 void putchar(char a) {
-  while (is_transmit_empty() == 0);
-    outb(COM1, a);
+  while (is_transmit_empty() == 0) {};
+  outb(COM1, a);
 }
 
 void write(const char* data, u32 size) {

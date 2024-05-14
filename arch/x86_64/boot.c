@@ -4,17 +4,16 @@
 
 void uefi_init(void *image, struct efi_system_table *systab) {
   systab->ConOut->OutputString(systab->ConOut, L"Hello World\r\n");
+  // ExitBootServices
+  u64 mmap_sz = 0, map_key = 0, desc_sz = 0;
+  void *mmap = NULL;
+  // TODO: Should attempt multiplie times
+  systab->BootServices->GetMemoryMap(&mmap_sz, mmap, &map_key, &desc_sz, NULL);
+  systab->BootServices->ExitBootServices(image, map_key);
 
-  // ExitBootServices!
-  for (int i = 0; i < 3; i++) {
-    u64 mmap_sz = 0, map_key = 0, desc_sz = 0;
-    void *mmap = NULL;
-    systab->BootServices->GetMemoryMap(&mmap_sz, mmap, &map_key, &desc_sz, NULL);
-    systab->ConOut->OutputString(systab->ConOut, L"Test\r\n");
-    systab->BootServices->ExitBootServices(image, map_key);
-  }
-  // Kernel Time!
+  // Begin executing kernel
   kmain();
 
   while (1);
 }
+

@@ -21,6 +21,8 @@ ELSE()
   -ffreestanding -fno-builtin -fshort-wchar -mno-red-zone \
   -Og -g -mtune=generic -fuse-ld=lld-link")
   SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-entry:uefi_init -Wl,-subsystem:efi_application -Wl,-largeaddressaware")
+  SET(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/root")
+  CONFIGURE_FILE("arch/x86_64/startup.nsh" "root/startup.nsh" COPYONLY)
   MESSAGE("TARGET ARCHITECTURE: x86_64")
 ENDIF()
 
@@ -48,6 +50,5 @@ ADD_EXECUTABLE(os.efi ${kernel_C_SRC} ${kernel_ARCH_ASM_SRC} ${kernel_ARCH_C_SRC
 #  COMMAND limine bios-install os.iso
 #  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/limine.cfg ${CMAKE_BINARY_DIR}/os.kernel
 #  VERBATIM)
-
-ADD_CUSTOM_TARGET(iso DEPENDS os.iso)
+# ADD_CUSTOM_TARGET(iso DEPENDS os.iso)
 
