@@ -4,7 +4,7 @@
 
 struct efi_output_interface {
   void* Reset;
-  u64 (*OutputString)(void *This, u16 *String);
+  u64 (*OutputString)(void *, u16 *);
   // Other stuff...
 };
 
@@ -17,8 +17,7 @@ struct efi_boot_services {
 
   void* AllocatePages;
   void* FreePages;
-  u64 (*GetMemoryMap)(u64 *MemoryMapSize, void *MemoryMap, u64 *MapKey,
-      u64 *DescriptorSize, u32 *DescriptorVersion);
+  u64 (*GetMemoryMap)(u64 *, void *, u64 *, u64 *, u32 *);
   void* AllocatePool;
   void* FreePool;
 
@@ -43,7 +42,7 @@ struct efi_boot_services {
   void* StartImage;
   void* Exit;
   void* UnloadImage;
-  u64 (*ExitBootServices)(void *ImageHandle, u64 MapKey);
+  u64 (*ExitBootServices)(void *, u64 MapKey);
 
   void* GetNextHighMonotonicCount;
   void* Stall;
@@ -66,10 +65,16 @@ struct efi_boot_services {
 };
 
 struct efi_system_table {
-  char _skip0[78];
+  char   _skip0[24];
+  void  *_skip1;
+  u32    _skip2;
+  void  *_skip3;
+  void  *_skip4;
+  void  *_skip5;
   struct efi_output_interface *ConOut;
-  char _skip1[16];
-  void *RuntimeServices;
+  void  *_skip6;
+  struct efi_output_interface *ConErr;
+  void  *_skip7;
   struct efi_boot_services *BootServices;
   // More data, we ignore...
 };
