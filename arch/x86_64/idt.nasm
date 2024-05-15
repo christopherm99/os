@@ -1,22 +1,17 @@
 section .text
 %macro isr_stub 1
 isr%1:
-        ; push rcx
-        ; push rdx
-        ; push r8
-        ; push r9
+        push rdx
+        push r8
+        push r9
         mov rdx, %1
         mov r8, 0
-        mov r9, [rsp]
+        mov r9, [rsp+24]
 %if %1 = 80h
         jmp  _isr_handler_err
 %else
         jmp  _isr_handler
 %endif
-        ; pop  r9
-        ; pop  r8
-        ; pop  rdx
-        ; pop  rcx
 %endmacro
 
 %assign i 0
@@ -73,12 +68,9 @@ _isr_handler:
         push r12
         push r11
         push r10
-        push r9
-        push r8
         push rdi
         push rsi
         push rbp
-        push rdx
         push rcx
         push rbx
         push rax
@@ -90,12 +82,9 @@ _isr_handler:
         pop  rax
         pop  rbx
         pop  rcx
-        pop  rdx
         pop  rbp
         pop  rsi
         pop  rdi
-        pop  r8
-        pop  r9
         pop  r10
         pop  r11
         pop  r12
@@ -103,7 +92,9 @@ _isr_handler:
         pop  r14
         pop  r15
 
-        add  rsp, 16 ; pop interrupt vector and error code
+        pop  r9
+        pop  r8
+        pop  rdx
 
         iretq
 
@@ -143,7 +134,8 @@ _isr_handler_err:
         pop  r14
         pop  r15
 
-        add  rsp, 16 ; pop interrupt vector and error code
-
+        pop  r9
+        pop  r8
+        pop  rdx
         iretq
 
