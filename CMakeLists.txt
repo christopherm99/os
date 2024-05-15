@@ -15,7 +15,7 @@ IF(res)
   MESSAGE("TARGET ARCHITECTURE: i686")
 ELSE()
   SET(ARCH "x86_64")
-  SET(CMAKE_ASM_NASM_OBJECT_FORMAT "elf64")
+  SET(CMAKE_ASM_NASM_OBJECT_FORMAT "win64")
   SET(CMAKE_C_COMPILER "clang")
   SET(CMAKE_C_FLAGS "-std=c99 --target=x86_64-windows -nostdlib \
   -ffreestanding -fno-builtin -fshort-wchar -mno-red-zone \
@@ -27,6 +27,8 @@ ELSE()
 ENDIF()
 
 ENABLE_LANGUAGE(ASM_NASM)
+
+SET(CMAKE_ASM_NASM_FLAGS "-g")
 
 SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "") # removes -rdynamic
 

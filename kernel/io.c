@@ -20,8 +20,15 @@ int is_transmit_empty() {
 }
 
 void putchar(char a) {
-  while (is_transmit_empty() == 0) {};
-  outb(COM1, a);
+  if (a == '\n') {
+    while (is_transmit_empty() == 0) {};
+    outb(COM1, '\r');
+    while (is_transmit_empty() == 0) {};
+    outb(COM1, '\n');
+  } else {
+    while (is_transmit_empty() == 0) {};
+    outb(COM1, a);
+  }
 }
 
 void write(const char* data, u32 size) {
@@ -34,6 +41,11 @@ void print(const char* str) {
 
 // TODO: there has to be a better way to do this
 static char *digit = "0123456789ABCDEF";
+
+void printu64(u64 data) {
+  for (int i = 60; i >= 0; i -= 4)
+    putchar(digit[data >> i & 0xF]);
+}
 
 void printu32(u32 data) {
   for (int i = 28; i >= 0; i -= 4)
@@ -60,6 +72,14 @@ void printf(const char *fmt, ...) {
         case 'x':
           printu32(va_arg(ap, int));
           break;
+        case 'l':
+          if (fmt[++i] == 'x') {
+            printu64(va_arg(ap, long long int));
+            break;
+          } else {
+            putchar('%'); putchar(fmt[i+1]);
+            break;
+          }
         case 'h':
           if (fmt[i+1] == 'h' && fmt[++i + 1] == 'x') {
             i++;

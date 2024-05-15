@@ -8,6 +8,28 @@ struct efi_output_interface {
   // Other stuff...
 };
 
+struct efi_guid {
+  u32 Data1;
+  u16 Data2;
+  u16 Data3;
+  u8  Data4[8];
+};
+
+#define EFI_LIP_GUID { 0x5B1B31A1, 0x9562, 0x11d2, {0x8E, 0x3F, 0x00, 0xA0, 0xC9, 0x69, 0x72, 0x3B} }
+
+struct efi_loaded_image_protocol {
+  u32   Revision;
+  void *ParentHandle;
+  void *SystemTable;
+  void *DeviceHandle;
+  void *FilePath;
+  void *Reserved;
+  u32   LoadOptionsSize;
+  void *LoadOptions;
+  void *ImageBase;
+  u64   ImageSize;
+  // Other stuff...
+};
 
 struct efi_boot_services {
   char _skip[24];
@@ -31,7 +53,7 @@ struct efi_boot_services {
   void* InstallProtocolInterface;
   void* ReinstallProtocolInterface;
   void* UninstallProtocolInterface;
-  void* HandleProtocol;
+  u64 (*HandleProtocol)(void *, struct efi_guid *, void **);
   void* PCHandleProtocol;
   void* RegisterProtocolNotify;
   void* LocateHandle;
