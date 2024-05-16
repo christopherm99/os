@@ -1,7 +1,7 @@
 #include <types.h>
-#include <uefi.h>
 #include <kernel.h>
 
+#include "uefi.h"
 #include "gdt.h"
 #include "idt.h"
 
@@ -14,7 +14,7 @@ u16 tohex(u64 v) {
 
 void output_u64hex(struct efi_output_interface *con, u64 v) {
   u16 str[17] = {};
-  for (u32 i = 0; i < 16; i++)
+  for (u32 i = 0; i < 17; i++)
     str[i] = '0';
   u32 i = 15;
   while (v > 0) {
