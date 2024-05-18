@@ -1,0 +1,19 @@
+Simple toy os for x64.
+
+Use cmake to build.
+
+Run with:
+
+qemu-system-x86_64 -no-reboot -display none -serial telnet::4555,server=on -d int \
+  -drive if=pflash,format=raw,unit=0,file=OVMF_CODE.fd,readonly=on \
+  -drive if=pflash,format=raw,unit=1,file=OVMF_VARS.fd -net none \
+  -drive format=raw,file=fat:rw:root
+
+telnet localhost 4555
+
+Project structure:
+arch/x86_64/*          bootloader/arch-specific code for x86_64
+arch/i386/*            bootloader/arch-specific code for i(3|6)86 (probably broken)
+kernel/*               kernel (arch-independent) code
+include/*              headers for kernel code
+
