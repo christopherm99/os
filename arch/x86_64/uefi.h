@@ -2,6 +2,8 @@
 #define _UEFI_H
 #include <types.h>
 
+#define EFI_BUFFER_TOO_SMALL (((s64) 5) < 0)
+
 struct efi_output_interface {
   void* Reset;
   u64 (*OutputString)(void *, u16 *);
@@ -17,6 +19,26 @@ struct efi_guid {
 
 #define EFI_LIP_GUID { 0x5B1B31A1, 0x9562, 0x11d2, {0x8E, 0x3F, 0x00, 0xA0, 0xC9, 0x69, 0x72, 0x3B} }
 
+typedef enum {
+  EfiReservedMemoryType,
+  EfiLoaderCode,
+  EfiLoaderData,
+  EfiBootServicesCode,
+  EfiBootServicesData,
+  EfiRuntimeServicesCode,
+  EfiRuntimeServicesData,
+  EfiConventionalMemory,
+  EfiUnusableMemory,
+  EfiACPIReclaimMemory,
+  EfiACPIMemoryNVS,
+  EfiMemoryMappedIO,
+  EfiMemoryMappedIOPortSpace,
+  EfiPalCode,
+  EfiPersistentMemory,
+  EfiUnacceptedMemoryType,
+  EfiMaxMemoryType
+} efi_memory_type_t;
+
 struct efi_loaded_image_protocol {
   u32   Revision;
   void *ParentHandle;
@@ -28,8 +50,20 @@ struct efi_loaded_image_protocol {
   void *LoadOptions;
   void *ImageBase;
   u64   ImageSize;
-  // Other stuff...
+  efi_memory_type_t ImageCodeType;
+  efi_memory_type_t ImageDataType;
 };
+
+struct efi_memory_desc {
+  u32 Type;
+  u32 Pad;
+  u64 PhysicalStart;
+  u64 VirtualStart;
+  u64 NumberOfPages;
+  u64 Attribute;
+};
+
+#define NEXT_DESC(Ptr,Size) ((struct efi_memory_desc *) (((u8 *) Ptr) + Size))
 
 struct efi_boot_services {
   char _skip[24];
@@ -40,7 +74,7 @@ struct efi_boot_services {
   void* AllocatePages;
   void* FreePages;
   u64 (*GetMemoryMap)(u64 *, void *, u64 *, u64 *, u32 *);
-  void* AllocatePool;
+  u64 (*AllocatePool)(efi_memory_type_t, u64, void **);
   void* FreePool;
 
   void* CreateEvent;
