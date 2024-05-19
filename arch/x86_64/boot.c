@@ -55,10 +55,9 @@ u64 uefi_init(void *image, struct efi_system_table *systab) {
   struct efi_guid lip_guid = EFI_LIP_GUID;
   CHECK(systab->BootServices->HandleProtocol(image, &lip_guid, (void **)&LIP),
       L"Failed to get HandleProtocol: ")
-  /*systab->ConOut->OutputString(systab->ConOut, L"ImageBase=0x");
+  systab->ConOut->OutputString(systab->ConOut, L"ImageBase=0x");
   output_u64hex(systab->ConOut, (u64)LIP->ImageBase);
   systab->ConOut->OutputString(systab->ConOut, L"\r\n");
-  */
 
   // GetMemoryMap
   // First, we need to know the size to malloc

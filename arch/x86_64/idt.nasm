@@ -20,6 +20,7 @@ isr_stub i
 %assign i i + 1
 %endrep
 
+section .data
 idt:
 %assign i 0
 %rep 256
@@ -42,21 +43,22 @@ idt_desc:
         dw (idt_end - idt)
         dq (idt)
 
+section .text
 global idt_load
 idt_load:
-        push rax
+        mov  rdx, idt
 %assign i 0
 %rep 256
         mov  rax, isr%+i
-        mov  [idt + 16 * i], ax
+        mov  [rdx + 16 * i], ax
         shr  rax, 16
-        mov  [idt + 16 * i + 6], ax
+        mov  [rdx + 16 * i + 6], ax
         shr  rax, 16
-        mov  [idt + 16 * i + 8], eax
+        mov  [rdx + 16 * i + 8], eax
 %assign i i + 1
 %endrep
-        lidt [idt_desc]
-        pop  rax
+        mov  rax, idt_desc
+        lidt [rax]
         ret
 .end:
 
