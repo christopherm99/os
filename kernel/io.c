@@ -76,10 +76,8 @@ void printf(const char *fmt, ...) {
           if (fmt[++i] == 'x') {
             printu64(va_arg(ap, long long int));
             break;
-          } else {
-            putchar('%'); putchar(fmt[i+1]);
-            break;
           }
+          goto fail;
         case 'h':
           if (fmt[i+1] == 'h' && fmt[++i + 1] == 'x') {
             i++;
@@ -91,7 +89,7 @@ void printf(const char *fmt, ...) {
           }
           /* FALLTHROUGH */
         default:
-          putchar('%'); putchar(fmt[i+1]);
+fail:     putchar('%'); putchar(fmt[i+1]);
           break;
       }
       i++;
