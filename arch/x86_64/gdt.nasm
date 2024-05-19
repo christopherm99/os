@@ -1,7 +1,8 @@
 section .text
 global gdt_load
 gdt_load:
-        lgdt [gdt_desc]
+        mov  rax, gdt_desc
+        lgdt [rax]
         push 8h
         lea  rax, [rel .reload_CS]
         push rax
@@ -16,25 +17,27 @@ gdt_load:
         ret
 .end:
 
+section .data
+align 4096
 gdt:
-gdt_null:
+.null:
         dq 0
-gdt_code:
-        dw 0FFFFh    ; first 16 bits of limit
+.kernel_code:
+        dw 0         ; first 16 bits of limit
         dw 0         ; first 16 bits of base address
         db 0         ; next 8 bits of base address
         db 9Ah       ; access byte
-        db 10101111b ; last 4 bits of limit and flags
+        db 10100000b ; last 4 bits of limit and flags
         db 0         ; last 8 bits of base address
-gdt_data:
+.kernel_data:
         dw 0FFFFh
         dw 0
         db 0
         db 92h
-        db 11001111b
+        db 11000000b
         db 0
-gdt_end:
+.end:
 gdt_desc:
-        dw (gdt_end - gdt)
+        dw (gdt.end - gdt)
         dq (gdt)
 

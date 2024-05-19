@@ -1,5 +1,6 @@
 #include <types.h>
 #include <kernel.h>
+#include <io.h>
 
 #include "uefi.h"
 #include "gdt.h"
@@ -75,25 +76,15 @@ u64 uefi_init(void *image, struct efi_system_table *systab) {
       L"Failed to GetMemoryMap (2): ")
 
   // ExitBootServices
-  systab->ConOut->OutputString(systab->ConOut, L"Attempting to ExitBootServices...\r\n");
-  u8 count = 0;
-  while (systab->BootServices->ExitBootServices(image, map_key)) {
-    if (count > 3) {
-      systab->ConOut->OutputString(systab->ConOut, L"Failed to ExitBootServices\r\n");
-      return -1;
-    }
-    mmap_sz += 4 * desc_sz; // Worst case scenario
-    CHECK(systab->BootServices->AllocatePool(LIP->ImageDataType, mmap_sz, (void **)&mmap),
-        L"Failed to AllocatePool: ")
-    systab->BootServices->GetMemoryMap(&mmap_sz, mmap, &map_key, &desc_sz, NULL);
-    count++;
-  }
+  CHECK(systab->BootServices->ExitBootServices(image, map_key),
+      L"Failed to ExitBootServices")
 
   // Setup GDT
   gdt_load();
-
+  print("Setup GDT\n");
   // Setup IDT
   idt_load();
+  print("Setup IDT\n");
 
   // Begin executing kernel
   kmain((void *)mmap, mmap_sz, desc_sz);
