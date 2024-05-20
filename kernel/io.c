@@ -63,18 +63,38 @@ void printu8(u8 data) {
     putchar(digit[data >> i & 0xF]);
 }
 
+void printd(u64 data) {
+  char buf[21] = {}; // max u64 has 20 digits
+  char *p = &buf[20];
+  if (data == 0) {
+    putchar('0');
+    return;
+  }
+  while (data) {
+    *p-- = '0' + data % 10;
+    data /= 10;
+  }
+  while (++p != &buf[21]) putchar(*p);
+}
+
 void printf(const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   for (u32 i = 0; fmt[i] != '\0';) {
     if (fmt[i] == '%') {
       switch (fmt[++i]) {
+        case 'd':
+          printd(va_arg(ap, int));
+          break;
         case 'x':
           printu32(va_arg(ap, int));
           break;
         case 'l':
           if (fmt[++i] == 'x') {
             printu64(va_arg(ap, long long int));
+            break;
+          } else if (fmt[i] == 'd') {
+            printd(va_arg(ap, long long int));
             break;
           }
           goto fail;
