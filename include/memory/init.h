@@ -1,5 +1,5 @@
-#ifndef _KALLOC_MEMORY_H
-#define _KALLOC_MEMORY_H
+#ifndef _MEMORY_INIT_H
+#define _MEMORY_INIT_H
 #include <types.h>
 
 #define NEXT_DESC(Ptr,Size)  ((struct memory_descriptor *) (((u8 *) Ptr) + Size))
@@ -12,6 +12,8 @@ struct memory_descriptor {
   u64 n_pages;
   u64 attr;
 };
+
+void kmem_init(void *rbp, struct memory_descriptor mmap[], u64 mmap_size, u64 desc_sz);
 
 #endif
 

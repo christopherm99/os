@@ -19,7 +19,7 @@ ELSE()
   SET(CMAKE_C_COMPILER "clang")
   SET(CMAKE_C_FLAGS "-std=c99 --target=x86_64-windows -nostdlib \
   -ffreestanding -fno-builtin -fshort-wchar -mno-red-zone \
-  -Og -g -mtune=generic -fuse-ld=lld-link")
+  -fno-omit-frame-pointer -Og -g -mtune=generic -fuse-ld=lld-link")
   SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-entry:uefi_init -Wl,-subsystem:efi_application -Wl,-largeaddressaware")
   SET(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/root")
   CONFIGURE_FILE("arch/x86_64/startup.nsh" "root/startup.nsh" COPYONLY)

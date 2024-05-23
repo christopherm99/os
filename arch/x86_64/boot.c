@@ -1,5 +1,5 @@
 #include <types.h>
-#include <kernel.h>
+#include <init.h>
 #include <io.h>
 
 #include "uefi.h"
@@ -86,7 +86,7 @@ u64 uefi_init(void *image, struct efi_system_table *systab) {
   print("Setup IDT\n");
 
   // Begin executing kernel
-  kmain((void *)mmap, mmap_sz, desc_sz);
+  kinit((void *)mmap, mmap_sz, desc_sz);
 
   while (1);
   return 0;
